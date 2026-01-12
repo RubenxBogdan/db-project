@@ -8,7 +8,7 @@ create table Spieler (
   Spielerid int primary key,
   constraint fk_team
     foreign key (teamid)
-    refferences team(teamid)
+    references team(teamid)
   );
 create table Team (
   Teamname varchar(80),
