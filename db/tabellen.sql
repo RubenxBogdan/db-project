@@ -39,7 +39,9 @@ create table Spielt_fuer (
   foreign key (teamid) references team(teamid)
   );
 create table leistet_bei (
-  
+  spielerid int,
+  spielid int,
+  statsid int,
   primary key (spielerid, spielid),
   foreign key (spielerid) references spieler(spielerid),
   foreign key (spielid) references spiel(spielid),
