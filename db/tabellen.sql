@@ -4,4 +4,12 @@ create table Spieler (
   Position varchar(80),
   Alter int,
   Grösse int,
-  Gewicht int,
+  Gewicht int
+);
+create table Team (
+  Teamname varchar(80) primary key,
+  NBA_Teamwins int,
+  City varchar(80),
+  Coachname varchar(80)
+  );
+create table
