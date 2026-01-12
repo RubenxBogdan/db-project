@@ -17,9 +17,9 @@ create table Stats (
   PPG float(1),
   RPG float(1),
   APG float(1),
-  SPG float,
-  BPG float,
-  FFG% float
+  SPG float(1),
+  BPG float(1),
+  FFG% float(1)
   );
 create table Spiel (
   Spielid int primary key,
