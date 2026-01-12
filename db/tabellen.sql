@@ -14,7 +14,7 @@ create table Team (
   );
 create table Stats (
   Statsid int primary key,
-  PPG float,
+  PPG float(5),
   RPG float,
   APG float,
   SPG float,
