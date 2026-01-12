@@ -1,16 +1,18 @@
 create table Spieler (
-  Spielername varchar(80) primary key,
+  Spielername varchar(80),
   NBA_Spielerwins int,
   Position varchar(80),
   Alter int,
   Grösse int,
-  Gewicht int
+  Gewicht int,
+  Spielerid int primary key
   );
 create table Team (
-  Teamname varchar(80) primary key,
+  Teamname varchar(80),
   NBA_Teamwins int,
   City varchar(80),
-  Coachname varchar(80)
+  Coachname varchar(80),
+  Teamid int primary key
   );
 create table Stats (
   Statsid int primary key,
@@ -19,7 +21,7 @@ create table Stats (
   APG float(1),
   SPG float(1),
   BPG float(1),
-  FFG% float(1)
+  FFG% float(1),
   );
 create table Spiel (
   Spielid int primary key,
@@ -27,3 +29,6 @@ create table Spiel (
   Ort varchar(80),
   Datum date
   );
+create table Spielt_fuer (
+  Spielerid varchar(80) foreign key,
+  
