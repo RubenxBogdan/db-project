@@ -5,7 +5,10 @@ create table Spieler (
   Alter int,
   Grösse int,
   Gewicht int,
-  Spielerid int primary key
+  Spielerid int primary key,
+  constraint fk_team
+    foreign key (teamid)
+    refferences team(teamid)
   );
 create table Team (
   Teamname varchar(80),
@@ -30,5 +33,4 @@ create table Spiel (
   Datum date
   );
 create table Spielt_fuer (
-  Spielerid varchar(80) foreign key,
-  
+  Spielerid varchar(80) 
