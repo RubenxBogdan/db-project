@@ -2,47 +2,48 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-# Professional database setup
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nba_stats.db'
-app.config['SECRET_KEY'] = 'nba_secure_key_2025'
+app.config['SECRET_KEY'] = 'nba_pro_secret'
 db = SQLAlchemy(app)
 
-# Database Model reflecting your Use Cases
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     team = db.Column(db.String(100), nullable=False)
     points = db.Column(db.Float, default=0.0)
-    rebounds = db.Column(db.Float, default=0.0)
-    history = db.Column(db.Text, default="") # For Use Case 4: Former Teams
+    history = db.Column(db.Text, default="") # Use Case 4
 
-# Use Case 1 & 2: Updating Game and Player Stats [cite: 2, 4]
-@app.route('/update', methods=['POST'])
-def update():
-    name = request.form.get('name')
-    pts = float(request.form.get('points', 0))
-    reb = float(request.form.get('rebounds', 0))
+# Use Case 5: Get specific team roster
+@app.route('/team/<team_name>')
+def team_roster(team_name):
+    players = Player.query.filter_by(team=team_name).all()
+    return render_template('index.html', players=players, title=f"Kader: {team_name}")
+
+# Use Case 3 & 4: Inspect Player
+@app.route('/inspect', methods=['POST'])
+def inspect():
+    search_name = request.form.get('name')
+    player = Player.query.filter_by(name=search_name).first()
     
-    player = Player.query.filter_by(name=name).first()
-    if player:
-        # Update existing player stats [cite: 2]
-        player.points = pts
-        player.rebounds = reb
-        db.session.commit()
-    else:
-        # If player unknown, create new (Use Case 3 Alternative Flow) 
-        new_player = Player(name=name, team="Free Agent", points=pts, rebounds=reb)
-        db.session.add(new_player)
-        db.session.commit()
-    return redirect(url_for('index'))
+    if not player:
+        # Alternative Flow for Use Case 3
+        flash(f"Dieser Spieler '{search_name}' ist unbekannt, möchten Sie für ihn Daten eintragen?")
+        return redirect(url_for('index'))
+    
+    return render_template('index.html', inspected_player=player, players=Player.query.all())
 
-# Use Case 3, 4, & 5: Inspection and Rosters [cite: 6, 8, 10]
 @app.route('/')
 def index():
     players = Player.query.all()
     return render_template('index.html', players=players)
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all() # Automatically creates your database tables
-    app.run(debug=True)
+# Use Case 1 & 2: Updating (Already existing, but ensure it handles 'history')
+@app.route('/add', methods=['POST'])
+def add_player():
+    name = request.form.get('name')
+    team = request.form.get('team')
+    history = request.form.get('history') # New for Use Case 4
+    new_p = Player(name=name, team=team, history=history)
+    db.session.add(new_p)
+    db.session.commit()
+    return redirect(url_for('index'))
