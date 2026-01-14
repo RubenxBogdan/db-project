@@ -1,45 +1,49 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>NBA Pro Stats Tracker</title>
-</head>
-<body class="bg-gray-900 text-white p-4 md:p-10">
-    <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-10 border-b border-gray-700 pb-5">
-            <h1 class="text-3xl font-bold text-blue-500">NBA STATS CENTER</h1>
-            <p class="text-gray-400">Projekt: Bogdan Ruben</p>
-        </header>
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
 
-        <section class="bg-gray-800 p-6 rounded-xl mb-10 shadow-lg">
-            <h2 class="text-xl font-semibold mb-4 text-green-400">Neues Spiel / Spieler erfassen</h2>
-            <form action="/update" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <input name="name" placeholder="Spieler Name" class="bg-gray-700 p-2 rounded" required>
-                <input name="points" type="number" step="0.1" placeholder="Punkte" class="bg-gray-700 p-2 rounded">
-                <input name="rebounds" type="number" step="0.1" placeholder="Rebounds" class="bg-gray-700 p-2 rounded">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 font-bold py-2 rounded transition">Speichern</button>
-            </form>
-        </section>
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nba_stats.db'
+app.config['SECRET_KEY'] = 'nba_pro_secret'
+db = SQLAlchemy(app)
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="bg-gray-800 p-6 rounded-xl">
-                <h3 class="text-lg font-bold mb-4">Spieler Statistiken</h3>
-                <div class="space-y-4">
-                    {% for p in players %}
-                    <div class="border-l-4 border-blue-500 bg-gray-700 p-3 rounded flex justify-between">
-                        <div>
-                            <p class="font-bold">{{ p.name }} ({{ p.team }})</p>
-                            <p class="text-xs text-gray-400">Historie: {{ p.history if p.history else "Keine vorherigen Teams" }}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-blue-400 font-mono">{{ p.points }} PPG</p>
-                            <p class="text-gray-400 font-mono text-sm">{{ p.rebounds }} RPG</p>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+class Player(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    team = db.Column(db.String(100), nullable=False)
+    points = db.Column(db.Float, default=0.0)
+    history = db.Column(db.Text, default="") # Use Case 4
+
+# Use Case 5: Get specific team roster
+@app.route('/team/<team_name>')
+def team_roster(team_name):
+    players = Player.query.filter_by(team=team_name).all()
+    return render_template('index.html', players=players, title=f"Kader: {team_name}")
+
+# Use Case 3 & 4: Inspect Player
+@app.route('/inspect', methods=['POST'])
+def inspect():
+    search_name = request.form.get('name')
+    player = Player.query.filter_by(name=search_name).first()
+    
+    if not player:
+        # Alternative Flow for Use Case 3
+        flash(f"Dieser Spieler '{search_name}' ist unbekannt, möchten Sie für ihn Daten eintragen?")
+        return redirect(url_for('index'))
+    
+    return render_template('index.html', inspected_player=player, players=Player.query.all())
+
+@app.route('/')
+def index():
+    players = Player.query.all()
+    return render_template('index.html', players=players)
+
+# Use Case 1 & 2: Updating (Already existing, but ensure it handles 'history')
+@app.route('/add', methods=['POST'])
+def add_player():
+    name = request.form.get('name')
+    team = request.form.get('team')
+    history = request.form.get('history') # New for Use Case 4
+    new_p = Player(name=name, team=team, history=history)
+    db.session.add(new_p)
+    db.session.commit()
+    return redirect(url_for('index'))
