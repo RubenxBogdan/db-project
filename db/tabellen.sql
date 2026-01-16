@@ -21,7 +21,7 @@ create table Stats (
   APG float(1),
   SPG float(1),
   BPG float(1),
-  FFG% float(1),
+  FFGPercent float(1),
   );
 create table Spiel (
   Spielid int primary key,
