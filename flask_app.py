@@ -388,7 +388,7 @@ def add_game_stats(game_id):
         points = request.form["points"]
         rebounds = request.form["rebounds"]
         assists = request.form["assists"]
-        minutes = request.form["minutes"]
+        minutes = request.form["minutes_played"]
         steals = request.form.get("steals", 0)
         blocks = request.form.get("blocks", 0)
         turnovers = request.form.get("turnovers", 0)
