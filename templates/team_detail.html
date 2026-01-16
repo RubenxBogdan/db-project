@@ -19,13 +19,13 @@
                 <p><strong>Team Name:</strong> {{ team.name }}</p>
                 <p><strong>City:</strong> {{ team.city }}</p>
                 <p><strong>Conference:</strong> {{ team.conference }}ern Conference</p>
-                <p><strong>Total Players:</strong> {{ team.players|length }}</p>
+                <p><strong>Total Players:</strong> {{ players|length }}</p>
             </div>
         </div>
     </div>
     <div class="col-md-4">
         <div class="stat-card blue">
-            <div class="stat-value">{{ team.players|length }}</div>
+            <div class="stat-value">{{ players|length }}</div>
             <div class="stat-label">Active Players</div>
         </div>
     </div>
@@ -34,8 +34,8 @@
 <div class="card">
     <div class="card-header">Current Roster</div>
     <div class="card-body">
-        {% if team.players %}
-            {% for player in team.players %}
+        {% if players %}
+            {% for player in players %}
             <a href="{{ url_for('player_detail', player_id=player.id) }}" class="player-card d-block text-decoration-none mb-3">
                 <div class="player-avatar">{{ player.name[0] }}</div>
                 <div class="player-info">
