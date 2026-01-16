@@ -42,7 +42,7 @@
                     <h3>{{ player.name }}</h3>
                     <p>Position: <span class="player-position">{{ player.position }}</span></p>
                     {% if player.birth_date %}
-                    <p class="text-muted mb-0">Born: {{ player.birth_date.strftime('%B %d, %Y') }}</p>
+                    <p class="text-muted mb-0">Born: {{ player.birth_date|format_date }}</p>
                     {% endif %}
                 </div>
             </a>

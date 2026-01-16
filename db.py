@@ -1,11 +1,26 @@
 import sqlite3
 import os
+from datetime import datetime
 
 DB_FILE = 'nba_stats.db'
 
+# Register an adapter for datetime objects
+def adapt_datetime(val):
+    """Format datetime for storage in SQLite."""
+    return val.isoformat()
+
+sqlite3.register_adapter(datetime, adapt_datetime)
+
+# Register a converter for datetime strings
+def convert_datetime(val):
+    """Convert stored datetime string back to datetime object."""
+    return datetime.fromisoformat(val.decode('utf-8'))
+
+sqlite3.register_converter("DATETIME", convert_datetime)
+
 def get_conn():
     """Get a database connection."""
-    conn = sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(DB_FILE, detect_types=sqlite3.PARSE_DECLTYPES)
     conn.row_factory = sqlite3.Row  # Enable column access by name
     return conn
 

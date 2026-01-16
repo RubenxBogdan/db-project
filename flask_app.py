@@ -16,6 +16,23 @@ import os
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-change-in-production'
 
+# Custom template filter for date formatting
+@app.template_filter('format_date')
+def format_date(value, format_str='%B %d, %Y'):
+    """Format a date string or datetime object."""
+    if value is None:
+        return ''
+    if isinstance(value, str):
+        # Try to parse the string as a date
+        try:
+            from datetime import datetime
+            return datetime.fromisoformat(value).strftime(format_str)
+        except (ValueError, AttributeError):
+            return value
+    else:
+        # It's already a datetime object
+        return value.strftime(format_str)
+
 # Initialize Flask-Login
 login_manager.init_app(app)
 login_manager.login_view = 'login'

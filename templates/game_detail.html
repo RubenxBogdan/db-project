@@ -5,7 +5,7 @@
 {% block content %}
 <div class="page-header">
     <h1>Game Details</h1>
-    <p class="subtitle">{{ game.date.strftime('%B %d, %Y') }}</p>
+    <p class="subtitle">{{ game.date|format_date }}</p>
 </div>
 
 <!-- Game Score Card -->
@@ -14,7 +14,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="text-center mb-4">
-                    <span class="badge badge-primary p-2">{{ game.date.strftime('%B %d, %Y') }}</span>
+                    <span class="badge badge-primary p-2">{{ game.date|format_date }}</span>
                 </div>
                 
                 <div class="teams-container mb-4">

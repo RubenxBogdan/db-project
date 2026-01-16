@@ -29,7 +29,7 @@
             <tbody>
                 {% for game in games %}
                 <tr>
-                    <td>{{ game.date.strftime('%B %d, %Y') }}</td>
+                    <td>{{ game.date|format_date }}</td>
                     <td>
                         <a href="{{ url_for('team_detail', team_id=game.home_team.id) }}">
                             {{ game.home_team.city }} {{ game.home_team.name }}

@@ -71,7 +71,7 @@
         {% for game in recent_games %}
         <div class="col-md-6">
             <div class="game-card">
-                <div class="game-date">{{ game.date.strftime('%B %d, %Y') }}</div>
+                <div class="game-date">{{ game.date|format_date }}</div>
                 <div class="teams-container">
                     <div class="team">
                         <div class="team-name">{{ game.home_team.city }} {{ game.home_team.name }}</div>

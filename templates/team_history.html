@@ -31,10 +31,10 @@
                                     {{ history.team.city }} {{ history.team.name }}
                                 </a>
                             </td>
-                            <td>{{ history.start_date.strftime('%B %d, %Y') }}</td>
+                            <td>{{ history.start_date|format_date }}</td>
                             <td>
                                 {% if history.end_date %}
-                                {{ history.end_date.strftime('%B %d, %Y') }}
+                                {{ history.end_date|format_date }}
                                 {% else %}
                                 <span class="badge badge-success">Current</span>
                                 {% endif %}
@@ -65,36 +65,30 @@
             <div class="card-header">Add Team History</div>
             <div class="card-body">
                 <form method="POST">
-                    {{ form.hidden_tag() }}
-                    
                     <div class="form-group">
-                        {{ form.team_id.label }}
-                        {{ form.team_id(class="form-control") }}
-                        {% for error in form.team_id.errors %}
-                        <div class="invalid-feedback d-block">{{ error }}</div>
-                        {% endfor %}
+                        <label for="team_id">Team</label>
+                        <select id="team_id" name="team_id" class="form-control" required>
+                            <option value="">Select Team</option>
+                            {% for team in teams %}
+                            <option value="{{ team.id }}">{{ team.city }} {{ team.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     
                     <div class="form-group">
-                        {{ form.start_date.label }}
-                        {{ form.start_date(class="form-control", type="date") }}
-                        {% for error in form.start_date.errors %}
-                        <div class="invalid-feedback d-block">{{ error }}</div>
-                        {% endfor %}
+                        <label for="start_date">Start Date</label>
+                        <input type="date" id="start_date" name="start_date" class="form-control" required>
                     </div>
                     
                     <div class="form-group">
-                        {{ form.end_date.label }}
-                        {{ form.end_date(class="form-control", type="date") }}
+                        <label for="end_date">End Date</label>
+                        <input type="date" id="end_date" name="end_date" class="form-control">
                         <small class="text-muted">Leave empty if currently on team</small>
-                        {% for error in form.end_date.errors %}
-                        <div class="invalid-feedback d-block">{{ error }}</div>
-                        {% endfor %}
                     </div>
                     
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{{ url_for('player_detail', player_id=player.id) }}" class="btn btn-secondary">Back to Profile</a>
-                        {{ form.submit(class="btn btn-primary") }}
+                        <button type="submit" class="btn btn-primary">Add History</button>
                     </div>
                 </form>
             </div>
