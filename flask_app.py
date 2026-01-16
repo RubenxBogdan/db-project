@@ -49,8 +49,16 @@ def get_team(team_id):
     return db_read("SELECT * FROM teams WHERE id = ?", (team_id,), single=True)
 
 def get_players():
-    """Get all players."""
-    return db_read("SELECT p.*, t.city, t.name as team_name FROM players p LEFT JOIN teams t ON p.current_team_id = t.id ORDER BY p.name")
+    """Get all players with their stats."""
+    return db_read("""
+        SELECT p.*, t.city, t.name as team_name,
+               (SELECT AVG(points) FROM player_statistics WHERE player_id = p.id) as avg_points,
+               (SELECT AVG(rebounds) FROM player_statistics WHERE player_id = p.id) as avg_rebounds,
+               (SELECT AVG(assists) FROM player_statistics WHERE player_id = p.id) as avg_assists
+        FROM players p
+        LEFT JOIN teams t ON p.current_team_id = t.id
+        ORDER BY p.name
+    """)
 
 def get_player(player_id):
     """Get a single player by ID."""
@@ -60,8 +68,8 @@ def get_games():
     """Get all games."""
     return db_read("""
         SELECT g.*, 
-               ht.id as home_team_id, ht.city as home_city, ht.name as home_name,
-               at.id as away_team_id, at.city as away_city, at.name as away_name
+               ht.city as home_city, ht.name as home_name,
+               at.city as away_city, at.name as away_name
         FROM games g
         JOIN teams ht ON g.home_team_id = ht.id
         JOIN teams at ON g.away_team_id = at.id
@@ -72,8 +80,8 @@ def get_game(game_id):
     """Get a single game by ID."""
     return db_read("""
         SELECT g.*, 
-               ht.id as home_team_id, ht.city as home_city, ht.name as home_name,
-               at.id as away_team_id, at.city as away_city, at.name as away_name
+               ht.city as home_city, ht.name as home_name,
+               at.city as away_city, at.name as away_name
         FROM games g
         JOIN teams ht ON g.home_team_id = ht.id
         JOIN teams at ON g.away_team_id = at.id
@@ -84,8 +92,7 @@ def get_player_stats(player_id):
     """Get all statistics for a player."""
     return db_read("""
         SELECT ps.*, g.date, g.home_score, g.away_score,
-               ht.id as home_team_id, ht.name as home_team_name, ht.city as home_team_city,
-               at.id as away_team_id, at.name as away_team_name, at.city as away_team_city
+               ht.name as home_team, at.name as away_team
         FROM player_statistics ps
         JOIN games g ON ps.game_id = g.id
         JOIN teams ht ON g.home_team_id = ht.id
@@ -107,7 +114,7 @@ def get_game_stats(game_id):
 def get_team_history(player_id):
     """Get team history for a player."""
     return db_read("""
-        SELECT th.*, t.city as team_city, t.name as team_name
+        SELECT th.*, t.city, t.name
         FROM team_history th
         JOIN teams t ON th.team_id = t.id
         WHERE th.player_id = ?
@@ -388,7 +395,7 @@ def add_game_stats(game_id):
         points = request.form["points"]
         rebounds = request.form["rebounds"]
         assists = request.form["assists"]
-        minutes = request.form["minutes_played"]
+        minutes = request.form["minutes"]
         steals = request.form.get("steals", 0)
         blocks = request.form.get("blocks", 0)
         turnovers = request.form.get("turnovers", 0)
