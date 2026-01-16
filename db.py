@@ -1,57 +1,144 @@
-from dotenv import load_dotenv
+import sqlite3
 import os
-from mysql.connector import pooling
 
-# Load .env variables
-load_dotenv()
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "database": os.getenv("DB_DATABASE")
-}
+DB_FILE = 'nba_stats.db'
 
-# Init db
-pool = pooling.MySQLConnectionPool(pool_name="pool", pool_size=5, **DB_CONFIG)
 def get_conn():
-    return pool.get_connection()
+    """Get a database connection."""
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row  # Enable column access by name
+    return conn
 
-# DB-Helper
 def db_read(sql, params=None, single=False):
+    """
+    Execute a SELECT query and return results.
+    
+    Args:
+        sql: SQL query string
+        params: Tuple of parameters for the query
+        single: If True, returns a single dict or None. If False, returns a list of dicts.
+    
+    Returns:
+        Single dict or list of dicts
+    """
     conn = get_conn()
     try:
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor()
         cur.execute(sql, params or ())
-
+        
         if single:
-            # liefert EIN Dict oder None
             row = cur.fetchone()
-            print("db_read(single=True) ->", row)   # DEBUG
-            return row
+            return dict(row) if row else None
         else:
-            # liefert Liste von Dicts (evtl. [])
             rows = cur.fetchall()
-            print("db_read(single=False) ->", rows)  # DEBUG
-            return rows
-
+            return [dict(row) for row in rows]
     finally:
-        try:
-            cur.close()
-        except:
-            pass
         conn.close()
 
-
 def db_write(sql, params=None):
+    """
+    Execute an INSERT, UPDATE, or DELETE query.
+    
+    Args:
+        sql: SQL query string
+        params: Tuple of parameters for the query
+    
+    Returns:
+        The rowid of the last modified row (for INSERT)
+    """
     conn = get_conn()
     try:
         cur = conn.cursor()
         cur.execute(sql, params or ())
         conn.commit()
-        print("db_write OK:", sql, params)  # DEBUG
+        return cur.lastrowid
     finally:
-        try:
-            cur.close()
-        except:
-            pass
+        conn.close()
+
+def init_db():
+    """Initialize the database with the required tables."""
+    conn = get_conn()
+    try:
+        cur = conn.cursor()
+        
+        # Create Teams table
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS teams (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                city TEXT NOT NULL,
+                conference TEXT NOT NULL CHECK(conference IN ('East', 'West'))
+            )
+        ''')
+        
+        # Create Players table
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS players (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                position TEXT NOT NULL,
+                birth_date DATE,
+                current_team_id INTEGER,
+                FOREIGN KEY (current_team_id) REFERENCES teams(id)
+            )
+        ''')
+        
+        # Create Games table
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS games (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date DATE NOT NULL,
+                home_team_id INTEGER NOT NULL,
+                away_team_id INTEGER NOT NULL,
+                home_score INTEGER DEFAULT 0,
+                away_score INTEGER DEFAULT 0,
+                FOREIGN KEY (home_team_id) REFERENCES teams(id),
+                FOREIGN KEY (away_team_id) REFERENCES teams(id),
+                CHECK (home_team_id != away_team_id)
+            )
+        ''')
+        
+        # Create PlayerStatistics table
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS player_statistics (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                player_id INTEGER NOT NULL,
+                game_id INTEGER NOT NULL,
+                points INTEGER DEFAULT 0,
+                rebounds INTEGER DEFAULT 0,
+                assists INTEGER DEFAULT 0,
+                minutes_played INTEGER DEFAULT 0,
+                steals INTEGER DEFAULT 0,
+                blocks INTEGER DEFAULT 0,
+                turnovers INTEGER DEFAULT 0,
+                FOREIGN KEY (player_id) REFERENCES players(id),
+                FOREIGN KEY (game_id) REFERENCES games(id)
+            )
+        ''')
+        
+        # Create TeamHistory table
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS team_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                player_id INTEGER NOT NULL,
+                team_id INTEGER NOT NULL,
+                start_date DATE NOT NULL,
+                end_date DATE,
+                FOREIGN KEY (player_id) REFERENCES players(id),
+                FOREIGN KEY (team_id) REFERENCES teams(id)
+            )
+        ''')
+        
+        # Create Users table for authentication
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL
+            )
+        ''')
+        
+        conn.commit()
+        print("Database initialized successfully!")
+    finally:
         conn.close()

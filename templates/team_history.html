@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Team History - {{ player.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Team History</h1>
+    <p class="subtitle">{{ player.name }} - Use Case 4</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">Historical Teams</div>
+            <div class="card-body p-0">
+                {% if team_history %}
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for history in team_history %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('team_detail', team_id=history.team.id) }}">
+                                    {{ history.team.city }} {{ history.team.name }}
+                                </a>
+                            </td>
+                            <td>{{ history.start_date.strftime('%B %d, %Y') }}</td>
+                            <td>
+                                {% if history.end_date %}
+                                {{ history.end_date.strftime('%B %d, %Y') }}
+                                {% else %}
+                                <span class="badge badge-success">Current</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if history.end_date %}
+                                Former
+                                {% else %}
+                                Current
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <h3>No Team History</h3>
+                    <p>This player has no previous teams recorded.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">Add Team History</div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="form-group">
+                        {{ form.team_id.label }}
+                        {{ form.team_id(class="form-control") }}
+                        {% for error in form.team_id.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.start_date.label }}
+                        {{ form.start_date(class="form-control", type="date") }}
+                        {% for error in form.start_date.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.end_date.label }}
+                        {{ form.end_date(class="form-control", type="date") }}
+                        <small class="text-muted">Leave empty if currently on team</small>
+                        {% for error in form.end_date.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('player_detail', player_id=player.id) }}" class="btn btn-secondary">Back to Profile</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

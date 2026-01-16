@@ -8,7 +8,6 @@ logger = logging.getLogger(__name__)
 
 login_manager = LoginManager()
 
-
 class User(UserMixin):
     def __init__(self, id, username, password):
         self.id = id
@@ -20,7 +19,7 @@ class User(UserMixin):
         logger.debug("User.get_by_id() aufgerufen mit user_id=%s", user_id)
         try:
             row = db_read(
-                "SELECT * FROM users WHERE id = %s",
+                "SELECT * FROM users WHERE id = ?",
                 (user_id,),
                 single=True
             )
@@ -40,7 +39,7 @@ class User(UserMixin):
         logger.debug("User.get_by_username() aufgerufen mit username=%s", username)
         try:
             row = db_read(
-                "SELECT * FROM users WHERE username = %s",
+                "SELECT * FROM users WHERE username = ?",
                 (username,),
                 single=True
             )
@@ -86,7 +85,7 @@ def register_user(username, password):
     hashed = generate_password_hash(password)
     try:
         db_write(
-            "INSERT INTO users (username, password) VALUES (%s, %s)",
+            "INSERT INTO users (username, password) VALUES (?, ?)",
             (username, hashed)
         )
         logger.info("register_user(): User '%s' erfolgreich angelegt", username)

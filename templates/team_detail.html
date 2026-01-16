@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ team.city }} {{ team.name }} - Team Roster{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ team.city }} {{ team.name }}</h1>
+    <p class="subtitle">Team Roster - Use Case 5</p>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Team Information</span>
+                <span class="team-conference {{ team.conference.lower() }}">{{ team.conference }}ern Conference</span>
+            </div>
+            <div class="card-body">
+                <p><strong>Team Name:</strong> {{ team.name }}</p>
+                <p><strong>City:</strong> {{ team.city }}</p>
+                <p><strong>Conference:</strong> {{ team.conference }}ern Conference</p>
+                <p><strong>Total Players:</strong> {{ team.players|length }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card blue">
+            <div class="stat-value">{{ team.players|length }}</div>
+            <div class="stat-label">Active Players</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Current Roster</div>
+    <div class="card-body">
+        {% if team.players %}
+            {% for player in team.players %}
+            <a href="{{ url_for('player_detail', player_id=player.id) }}" class="player-card d-block text-decoration-none mb-3">
+                <div class="player-avatar">{{ player.name[0] }}</div>
+                <div class="player-info">
+                    <h3>{{ player.name }}</h3>
+                    <p>Position: <span class="player-position">{{ player.position }}</span></p>
+                    {% if player.birth_date %}
+                    <p class="text-muted mb-0">Born: {{ player.birth_date.strftime('%B %d, %Y') }}</p>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <h3>Empty Roster</h3>
+            <p>This team currently has no players assigned.</p>
+            <a href="{{ url_for('add_player') }}" class="btn btn-primary">Add Player</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

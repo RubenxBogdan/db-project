@@ -1,23 +1,111 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Meine ToDo-Liste</title>
-</head>
-<body>
-    <h1>Meine ToDos</h1>
+{% extends "base.html" %}
 
-    <form method="POST">
-        <input type="text" name="text" placeholder="Neues Todo" required>
-        <button type="submit">Hinzufügen</button>
-    </form>
+{% block title %}Dashboard - NBA Statistics Tracker{% endblock %}
 
-    <ul>
-        {% for id, text in items %}
-            <li>
-                {{ text }} 
-                <a href="/delete/{{ id }}">Löschen</a>
-            </li>
+{% block content %}
+<div class="page-header">
+    <h1>NBA Statistics Dashboard</h1>
+    <p class="subtitle">Track teams, players, games, and player statistics</p>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <a href="{{ url_for('add_team') }}" class="btn btn-primary">Add Team</a>
+    <a href="{{ url_for('add_player') }}" class="btn btn-primary">Add Player</a>
+    <a href="{{ url_for('add_game') }}" class="btn btn-primary">Add Game</a>
+    <a href="{{ url_for('teams_list') }}" class="btn btn-secondary">View All Teams</a>
+    <a href="{{ url_for('players_list') }}" class="btn btn-secondary">View All Players</a>
+    <a href="{{ url_for('games_list') }}" class="btn btn-secondary">View All Games</a>
+</div>
+
+<!-- Stats Overview -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="stat-card blue fade-in">
+            <div class="stat-value">{{ total_teams }}</div>
+            <div class="stat-label">Teams</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card green fade-in">
+            <div class="stat-value">{{ total_players }}</div>
+            <div class="stat-label">Players</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card red fade-in">
+            <div class="stat-value">{{ total_games }}</div>
+            <div class="stat-label">Games Tracked</div>
+        </div>
+    </div>
+</div>
+
+<!-- Teams Grid -->
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>NBA Teams</h2>
+        <a href="{{ url_for('teams_list') }}" class="btn btn-sm btn-primary">View All</a>
+    </div>
+    <div class="row">
+        {% for team in teams %}
+        <div class="col-md-3">
+            <a href="{{ url_for('team_detail', team_id=team.id) }}" class="team-card d-block text-decoration-none">
+                <div class="team-logo">{{ team.city[0] }}</div>
+                <div class="team-name">{{ team.name }}</div>
+                <div class="team-city">{{ team.city }}</div>
+                <span class="team-conference {{ team.conference.lower() }}">{{ team.conference }}</span>
+            </a>
+        </div>
         {% endfor %}
-    </ul>
-</body>
-</html>
+    </div>
+</div>
+
+<!-- Recent Games -->
+{% if recent_games %}
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Recent Games</h2>
+        <a href="{{ url_for('games_list') }}" class="btn btn-sm btn-primary">View All</a>
+    </div>
+    <div class="row">
+        {% for game in recent_games %}
+        <div class="col-md-6">
+            <div class="game-card">
+                <div class="game-date">{{ game.date.strftime('%B %d, %Y') }}</div>
+                <div class="teams-container">
+                    <div class="team">
+                        <div class="team-name">{{ game.home_team.city }} {{ game.home_team.name }}</div>
+                        <div class="team-score {% if game.home_score > game.away_score %}winner{% endif %}">{{ game.home_score }}</div>
+                    </div>
+                    <div class="vs">VS</div>
+                    <div class="team">
+                        <div class="team-name">{{ game.away_team.city }} {{ game.away_team.name }}</div>
+                        <div class="team-score {% if game.away_score > game.home_score %}winner{% endif %}">{{ game.away_score }}</div>
+                    </div>
+                </div>
+                <div class="game-actions">
+                    <a href="{{ url_for('game_detail', game_id=game.id) }}" class="btn btn-sm btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Info Section -->
+<div class="card mt-4">
+    <div class="card-header">About This Application</div>
+    <div class="card-body">
+        <h5>NBA Statistics Tracker Features</h5>
+        <ul>
+            <li><strong>Use Case 1:</strong> Update Games - Add new game results and scores</li>
+            <li><strong>Use Case 2:</strong> Update Player Statistics - Record individual player performance</li>
+            <li><strong>Use Case 3:</strong> Inspect Player Statistics - View detailed player stats and history</li>
+            <li><strong>Use Case 4:</strong> Former Teams - Track player team history and transfers</li>
+            <li><strong>Use Case 5:</strong> Team Roster - View current team lineups</li>
+        </ul>
+        <p class="text-muted mt-3">Click "Init DB" in the navigation to initialize the database with sample data.</p>
+    </div>
+</div>
+{% endblock %}

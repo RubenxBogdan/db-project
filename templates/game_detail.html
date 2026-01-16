@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Game Details - NBA Statistics Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Game Details</h1>
+    <p class="subtitle">{{ game.date.strftime('%B %d, %Y') }}</p>
+</div>
+
+<!-- Game Score Card -->
+<div class="row mb-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <span class="badge badge-primary p-2">{{ game.date.strftime('%B %d, %Y') }}</span>
+                </div>
+                
+                <div class="teams-container mb-4">
+                    <div class="team text-center">
+                        <a href="{{ url_for('team_detail', team_id=game.home_team.id) }}" class="text-decoration-none">
+                            <div class="team-logo mx-auto mb-2" style="background: var(--primary-blue); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                                {{ game.home_team.city[0] }}
+                            </div>
+                            <div class="team-name text-dark" style="font-size: 1.1rem;">{{ game.home_team.city }} {{ game.home_team.name }}</div>
+                        </a>
+                        <div class="team-score {% if game.home_score > game.away_score %}winner{% endif %}" style="font-size: 3rem; font-weight: 700; color: var(--primary-blue);">{{ game.home_score }}</div>
+                    </div>
+                    <div class="vs d-flex align-items-center justify-content-center" style="font-weight: 700; color: var(--text-muted);">VS</div>
+                    <div class="team text-center">
+                        <a href="{{ url_for('team_detail', team_id=game.away_team.id) }}" class="text-decoration-none">
+                            <div class="team-logo mx-auto mb-2" style="background: var(--primary-red); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                                {{ game.away_team.city[0] }}
+                            </div>
+                            <div class="team-name text-dark" style="font-size: 1.1rem;">{{ game.away_team.city }} {{ game.away_team.name }}</div>
+                        </a>
+                        <div class="team-score {% if game.away_score > game.home_score %}winner{% endif %}" style="font-size: 3rem; font-weight: 700; color: var(--primary-blue);">{{ game.away_score }}</div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <strong>Winner:</strong>
+                    {% if game.home_score > game.away_score %}
+                    <span class="badge badge-success">{{ game.home_team.name }}</span>
+                    {% elif game.away_score > game.home_score %}
+                    <span class="badge badge-success">{{ game.away_team.name }}</span>
+                    {% else %}
+                    <span class="badge badge-secondary">Tie Game</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Player Statistics -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Player Statistics - Use Case 2</span>
+        <a href="{{ url_for('add_game_stats', game_id=game.id) }}" class="btn btn-sm btn-light">Add Player Stats</a>
+    </div>
+    <div class="card-body p-0">
+        {% if statistics %}
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Team</th>
+                    <th>PTS</th>
+                    <th>REB</th>
+                    <th>AST</th>
+                    <th>MIN</th>
+                    <th>STL</th>
+                    <th>BLK</th>
+                    <th>TO</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in statistics %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('player_detail', player_id=stat.player.id) }}">
+                            {{ stat.player.name }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if stat.player.current_team %}
+                        {{ stat.player.current_team.city }} {{ stat.player.current_team.name }}
+                        {% else %}
+                        <span class="text-muted">Unknown</span>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ stat.points }}</strong></td>
+                    <td>{{ stat.rebounds }}</td>
+                    <td>{{ stat.assists }}</td>
+                    <td>{{ stat.minutes_played }}</td>
+                    <td>{{ stat.steals }}</td>
+                    <td>{{ stat.blocks }}</td>
+                    <td>{{ stat.turnovers }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <h3>No Player Statistics</h3>
+            <p>No player statistics have been recorded for this game yet.</p>
+            <a href="{{ url_for('add_game_stats', game_id=game.id) }}" class="btn btn-primary">Add Statistics</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

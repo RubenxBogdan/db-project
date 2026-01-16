@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}{{ player.name }} - Player Statistics{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ player.name }}</h1>
+    <p class="subtitle">Player Statistics - Use Case 3</p>
+</div>
+
+<!-- Player Header -->
+<div class="player-header">
+    <div class="player-avatar-lg">{{ player.name[0] }}</div>
+    <h1>{{ player.name }}</h1>
+    <div class="player-meta">
+        <p>Position: <strong>{{ player.position }}</strong> | 
+        {% if player.current_team %}
+        <a href="{{ url_for('team_detail', team_id=player.current_team.id) }}" class="text-white">
+            {{ player.current_team.city }} {{ player.current_team.name }}
+        </a>
+        {% else %}
+        Free Agent
+        {% endif %}
+        | Born: {{ player.birth_date.strftime('%B %d, %Y') if player.birth_date else 'Unknown' }}</p>
+    </div>
+    
+    <!-- Career Averages -->
+    <div class="player-stats-grid">
+        <div class="player-stat-item">
+            <div class="stat-value">{{ player.avg_points }}</div>
+            <div class="stat-label">Points Per Game</div>
+        </div>
+        <div class="player-stat-item">
+            <div class="stat-value">{{ player.avg_rebounds }}</div>
+            <div class="stat-label">Rebounds Per Game</div>
+        </div>
+        <div class="player-stat-item">
+            <div class="stat-value">{{ player.avg_assists }}</div>
+            <div class="stat-label">Assists Per Game</div>
+        </div>
+        <div class="player-stat-item">
+            <div class="stat-value">{{ statistics|length }}</div>
+            <div class="stat-label">Games Played</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Team History -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                Team History - Use Case 4
+            </div>
+            <div class="card-body">
+                {% if team_history %}
+                <ul class="team-history-list">
+                    {% for history in team_history %}
+                    <li class="team-history-item">
+                        <div class="team-name">{{ history.team.city }} {{ history.team.name }}</div>
+                        <div class="date-range">
+                            {{ history.start_date.strftime('%b %d, %Y') }}
+                            {% if history.end_date %}
+                            - {{ history.end_date.strftime('%b %d, %Y') }}
+                            {% else %}
+                            - Present
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="empty-state p-3">
+                    <p class="mb-2">No team history recorded.</p>
+                    <a href="{{ url_for('add_team_history', player_id=player.id) }}" class="btn btn-sm btn-primary">Add History</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Game Statistics -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Game Statistics</span>
+                {% if player.current_team %}
+                <a href="{{ url_for('add_team_history', player_id=player.id) }}" class="btn btn-sm btn-light">Add History</a>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                {% if statistics %}
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Opponent</th>
+                            <th>PTS</th>
+                            <th>REB</th>
+                            <th>AST</th>
+                            <th>MIN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stat in statistics %}
+                        <tr>
+                            <td>{{ stat.game.date.strftime('%m/%d/%Y') }}</td>
+                            <td>
+                                {% if stat.game.home_team_id == player.current_team_id %}
+                                vs {{ stat.game.away_team.city }} {{ stat.game.away_team.name }}
+                                {% else %}
+                                @ {{ stat.game.home_team.city }} {{ stat.game.home_team.name }}
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ stat.points }}</strong></td>
+                            <td>{{ stat.rebounds }}</td>
+                            <td>{{ stat.assists }}</td>
+                            <td>{{ stat.minutes_played }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <h3>No Statistics</h3>
+                    <p>This player has no game statistics recorded yet.</p>
+                    <p class="text-muted">Add a game and then record statistics for this player.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

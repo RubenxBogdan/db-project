@@ -1,0 +1,5 @@
+# NBA Statistics Tracker - Requirements
+
+Flask>=2.3.0
+Flask-Login>=0.6.0
+werkzeug>=2.3.0

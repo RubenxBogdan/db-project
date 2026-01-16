@@ -1,129 +1,123 @@
-# 📘 Projekt-Anleitung: Flask + MySQL auf PythonAnywhere
-Diese Anleitung beschreibt den kompletten Ablauf, um das Projekt auszuführen und im Team (GitHub + PythonAnywhere) zu entwickeln.
+# NBA Statistics Tracker
 
-**Hinweis:** Nur eine Person pro Team muss diese Anleitung durchführen.
+A Flask web application for tracking NBA teams, players, games, and player statistics. This application implements 5 use cases for managing basketball data.
 
-## ✅ Voraussetzungen
+## Features
 
-### 👥 Team
+- **Use Case 1: Update Games** - Add new game results and scores
+- **Use Case 2: Update Player Statistics** - Record individual player performance in games
+- **Use Case 3: Inspect Player Statistics** - View detailed player stats and career history
+- **Use Case 4: Former Teams** - Track player team history and transfers
+- **Use Case 5: Team Roster** - View current team lineups
 
--   Alle Teammitglieder besitzen einen **GitHub-Account**
--   **Eine Person** besitzt einen **PythonAnywhere-Account**
--   Diese Person teilt das PythonAnywhere-Login **mit dem Team** (damit alle deployen können)
+## Requirements
 
-------------------------------------------------------------------------
+- Python 3.8+
+- Flask
+- Flask-Login
 
-## 🚀 1. GitHub-Projekt einrichten
+## Installation
 
-### 1.1 Vorlage importieren
+1. Clone or navigate to the project directory:
+   ```bash
+   cd nba_stats_app
+   ```
 
-1.  Repository öffnen:\
-    👉 https://github.com/EgliMNG/db-project
-2.  Rechts oben **Fork** klicken
-3.  Das neue Repo heisst z.B. username/db-project
+2. Create a virtual environment (recommended):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-### 1.2 Teammitglieder einladen
-Im geforkten Repo:
-1.  Settings
-2.  Collaborators
-3.  Add people
-4.  Teammitglieder + **Lehrperson** einladen
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-------------------------------------------------------------------------
+## Running the Application
 
-## 🌐 2. PythonAnywhere vorbereiten
-👉 https://www.pythonanywhere.com
+1. Start the Flask development server:
+   ```bash
+   python app.py
+   ```
 
-### 2.1 Teacher hinzufügen
-1. Account → Education → *Enter your teacher's username*
+2. Open your browser and navigate to:
+   ```
+   http://localhost:5000
+   ```
 
-### 2.2 Neue Flask-Webapp erstellen
-1.	Menü: Web → Add new web app
-2.	Flask auswählen
-3.	Python 3.13 auswählen
+3. Register a new account or login
+4. Click "Init DB" in the navigation bar to initialize the database tables
+5. Click "Seed DB" to add sample data
 
-### 2.3 Webapp-Verzeichnis ersetzen
-1.	Zurück auf das Dashboard
-2.	Jetzt Terminal öffnen\
-→ Open Bash Console (links auf den Button $ Bash) klicken.
+## Project Structure
 
-``` bash
-# Das von GitHub geforkte Repo klonen
-git clone https://github.com/<dein_github_username>/<dein_repo>.git
-
-# Alte Struktur löschen
-rm -rf mysite
-
-# Neuen Code als Webapp-Verzeichnis verwenden
-mv <dein_repo> mysite 
+```
+nba_stats_app/
+├── app.py              # Main Flask application with routes
+├── db.py               # Database helper functions (sqlite3)
+├── auth.py             # Authentication module (Flask-Login)
+├── requirements.txt    # Python dependencies
+├── static/
+│   └── css/
+│       └── style.css   # Custom styles (NBA colors)
+└── templates/
+    ├── base.html       # Base template with navigation
+    ├── index.html      # Dashboard
+    ├── login.html      # Login form
+    ├── register.html   # Registration form
+    ├── teams.html      # List of teams
+    ├── team_detail.html # Team roster (Use Case 5)
+    ├── add_team.html   # Add team form
+    ├── players.html    # List of players
+    ├── player_detail.html # Player statistics (Use Case 3)
+    ├── add_player.html # Add player form
+    ├── team_history.html # Team history (Use Case 4)
+    ├── games.html      # List of games
+    ├── add_game.html   # Add game form (Use Case 1)
+    ├── game_detail.html # Game details
+    ├── add_game_stats.html # Add player stats (Use Case 2)
+    ├── 404.html        # Custom 404 page
+    └── 500.html        # Custom 500 page
 ```
 
-------------------------------------------------------------------------
+## Database Schema
 
-### 2.4 Autodeployment (post-merge Hook)
-Damit Änderungen von GitHub automatisch deployed werden:
+The application uses SQLite with the following tables:
 
-1.  Script anlegen und ausführbar machen
-``` bash
-cd mysite/.git/hooks
-touch post-merge
-chmod +x post-merge
-```
+1. **teams** - NBA team information (name, city, conference)
+2. **players** - Player information (name, position, birth date, current team)
+3. **games** - Game results (date, teams, scores)
+4. **player_statistics** - Individual game statistics (points, rebounds, assists, etc.)
+5. **team_history** - Player team history (previous teams, dates)
+6. **users** - User accounts for authentication
 
-2.  Konsole schliessen
-3.  Im Menü auf *Files*
-4.  In den Ordner *mysite/.git/hooks* navigieren (Ordnerstruktur links)
-5.  File *post-merge* (rechts) öffnen, folgenden Inhalt einfügen und speichern (Save). **Wichtig:** Der username muss hier in Kleinbuchstabe geschrieben werden! 
-```bash
-#!/bin/bash
-touch /var/www/<lowercase(username_pythonanywhere)>_pythonanywhere_com_wsgi.py
-```
+## Database Helper Functions
 
-------------------------------------------------------------------------
+The `db.py` module provides helper functions for database operations:
 
-## 🗄️ 3. MySQL-Datenbank einrichten
+- `get_conn()` - Get a database connection
+- `db_read(sql, params, single)` - Execute SELECT query and return results
+- `db_write(sql, params)` - Execute INSERT, UPDATE, or DELETE query
+- `init_db()` - Initialize database with all tables
 
-### 3.1 Datenbank erstellen
-1.  Im Menü rechts oben auf *Databases* klicken
-2.  Unter MySQL ein DB-Passwort wählen und das Passwort notieren (wird im nächsten Schritt benötigt)
-3.  Mit "Initialize MySQL" bestätigen
-4.  Mit einem Klick auf die neu erstellte DB "&lt;username&gt;$default" die MySQL-Konsole öffnen. (Wenn Console Limit erreicht, auf dem Dashboard oder im Menü Consoles z.B. Bash Console schliessen)
-5.  In MySQL-Konsole SQL Script ausführen:
+## Authentication
 
-``` sql
-SOURCE mysite/db/TODOS.sql;
-```
-Dadurch wird die gesamte Struktur der Datenbank erstellt.
+The application uses Flask-Login for user authentication:
 
-------------------------------------------------------------------------
+- `register` - Create a new user account
+- `login` - User login
+- `logout` - User logout
 
-### 3.2 `.env` erstellen
-1.  Im Menü auf *Files*
-2.  Im Textfeld *.env* eintippen und auf "New file" klicken (unbedingt auf der obersten Stufe und **nicht** im "mysite"-Ordner)
+Routes for adding/modifying data require authentication.
 
-3.  Inhalt:
-```
-DB_HOST=<username_pythonanywhere>.mysql.pythonanywhere-services.com
-DB_USER=<username_pythonanywhere>
-DB_PASSWORD=<dein_db_passwort>
-DB_DATABASE=<username_pythonanywhere>$default
-W_SECRET=<irgend_ein_secret>
-```
-Für `W_SECRET` darfst du irgend eine Buchstaben- und Zahlenkombination wählen und notieren, da du diese im nächsten Schhritt wieder brauchst
+## Technologies Used
 
-------------------------------------------------------------------------
+- **Backend**: Python, Flask
+- **Database**: SQLite with raw sqlite3
+- **Authentication**: Flask-Login
+- **Frontend**: HTML5, CSS3, Bootstrap 5 (via CDN)
 
-## 🔄 4. GitHub-WebHook für automatisches Deployment
+## License
 
-Im GitHub-Repo:
-1.  Settings → Webhooks → Add webhook
-2.  URL:\
-    https://&lt;username_pythonanywhere&gt;.pythonanywhere.com/update_server
-3.  Content type: `application/json`
-4.  Secret: Die geheime Kombination, die du im ".env" unter `W_SECRET` gesetzt hast
-5.  **Add webhook**
-
-## ✅ 5. Website testen
-1. Rufe die URL http://<username_pythonanywhere>.pythonanywhere.com auf.
-2. Siehst du ein Login? Klicke auf registrieren und registriere einen User
-3. Falls du noch die Message "Welcome to Flask!" siehst, gehe zurück zum Menü "Web" und klicke auf 🔄 Reload
+This project is for educational purposes.
