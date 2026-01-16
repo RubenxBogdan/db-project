@@ -57,7 +57,7 @@
                 <ul class="team-history-list">
                     {% for history in team_history %}
                     <li class="team-history-item">
-                        <div class="team-name">{{ history.team.city }} {{ history.team.name }}</div>
+                        <div class="team-name">{{ history.city }} {{ history.name }}</div>
                         <div class="date-range">
                             {{ history.start_date|format_date('%b %d, %Y') }}
                             {% if history.end_date %}
