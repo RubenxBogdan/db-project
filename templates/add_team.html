@@ -13,35 +13,28 @@
         <div class="card">
             <div class="card-body">
                 <form method="POST">
-                    {{ form.hidden_tag() }}
-                    
                     <div class="form-group">
-                        {{ form.name.label }}
-                        {{ form.name(class="form-control", placeholder="e.g., Lakers") }}
-                        {% for error in form.name.errors %}
-                        <div class="invalid-feedback d-block">{{ error }}</div>
-                        {% endfor %}
+                        <label for="name">Team Name</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="e.g., Lakers" required>
                     </div>
-                    
+
                     <div class="form-group">
-                        {{ form.city.label }}
-                        {{ form.city(class="form-control", placeholder="e.g., Los Angeles") }}
-                        {% for error in form.city.errors %}
-                        <div class="invalid-feedback d-block">{{ error }}</div>
-                        {% endfor %}
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" class="form-control" placeholder="e.g., Los Angeles" required>
                     </div>
-                    
+
                     <div class="form-group">
-                        {{ form.conference.label }}
-                        {{ form.conference(class="form-control") }}
-                        {% for error in form.conference.errors %}
-                        <div class="invalid-feedback d-block">{{ error }}</div>
-                        {% endfor %}
+                        <label for="conference">Conference</label>
+                        <select id="conference" name="conference" class="form-control" required>
+                            <option value="">Select Conference</option>
+                            <option value="East">Eastern Conference</option>
+                            <option value="West">Western Conference</option>
+                        </select>
                     </div>
-                    
+
                     <div class="d-flex justify-content-between">
                         <a href="{{ url_for('teams_list') }}" class="btn btn-secondary">Cancel</a>
-                        {{ form.submit(class="btn btn-primary") }}
+                        <button type="submit" class="btn btn-primary">Add Team</button>
                     </div>
                 </form>
             </div>
