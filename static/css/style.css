@@ -145,6 +145,7 @@ body {
     background-color: var(--primary-blue);
     border-color: var(--primary-blue);
     font-weight: 600;
+    color: white;
     padding: 0.5rem 1.25rem;
     border-radius: 4px;
     transition: all 0.3s ease;
@@ -160,6 +161,7 @@ body {
     background-color: var(--primary-red);
     border-color: var(--primary-red);
     font-weight: 600;
+    color: white;
     border-radius: 4px;
 }
 
@@ -172,6 +174,7 @@ body {
     background-color: var(--success-green);
     border-color: var(--success-green);
     font-weight: 600;
+    color: white;
     border-radius: 4px;
 }
 
