@@ -16,11 +16,11 @@
                 <h5>{{ game.date|format_date }}</h5>
                 <div class="d-flex justify-content-center align-items-center gap-3 mt-3">
                     <div>
-                        <strong>{{ game.home_team.city }} {{ game.home_team.name }}</strong>
+                        <strong>{{ game.home_city }} {{ game.home_name }}</strong>
                     </div>
                     <span class="badge badge-primary">{{ game.home_score }} - {{ game.away_score }}</span>
                     <div>
-                        <strong>{{ game.away_team.city }} {{ game.away_team.name }}</strong>
+                        <strong>{{ game.away_city }} {{ game.away_name }}</strong>
                     </div>
                 </div>
             </div>

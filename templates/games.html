@@ -31,23 +31,23 @@
                 <tr>
                     <td>{{ game.date|format_date }}</td>
                     <td>
-                        <a href="{{ url_for('team_detail', team_id=game.home_team.id) }}">
-                            {{ game.home_team.city }} {{ game.home_team.name }}
+                        <a href="{{ url_for('team_detail', team_id=game.home_team_id) }}">
+                            {{ game.home_city }} {{ game.home_name }}
                         </a>
                     </td>
                     <td>
                         <strong>{{ game.home_score }}</strong> - {{ game.away_score }}
                     </td>
                     <td>
-                        <a href="{{ url_for('team_detail', team_id=game.away_team.id) }}">
-                            {{ game.away_team.city }} {{ game.away_team.name }}
+                        <a href="{{ url_for('team_detail', team_id=game.away_team_id) }}">
+                            {{ game.away_city }} {{ game.away_name }}
                         </a>
                     </td>
                     <td>
                         {% if game.home_score > game.away_score %}
-                        <span class="badge badge-success">{{ game.home_team.name }}</span>
+                        <span class="badge badge-success">{{ game.home_name }}</span>
                         {% elif game.away_score > game.home_score %}
-                        <span class="badge badge-success">{{ game.away_team.name }}</span>
+                        <span class="badge badge-success">{{ game.away_name }}</span>
                         {% else %}
                         <span class="badge badge-secondary">Tie</span>
                         {% endif %}

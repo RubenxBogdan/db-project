@@ -74,12 +74,12 @@
                 <div class="game-date">{{ game.date|format_date }}</div>
                 <div class="teams-container">
                     <div class="team">
-                        <div class="team-name">{{ game.home_team.city }} {{ game.home_team.name }}</div>
+                        <div class="team-name">{{ game.home_city }} {{ game.home_name }}</div>
                         <div class="team-score {% if game.home_score > game.away_score %}winner{% endif %}">{{ game.home_score }}</div>
                     </div>
                     <div class="vs">VS</div>
                     <div class="team">
-                        <div class="team-name">{{ game.away_team.city }} {{ game.away_team.name }}</div>
+                        <div class="team-name">{{ game.away_city }} {{ game.away_name }}</div>
                         <div class="team-score {% if game.away_score > game.home_score %}winner{% endif %}">{{ game.away_score }}</div>
                     </div>
                 </div>

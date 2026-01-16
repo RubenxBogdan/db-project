@@ -19,21 +19,21 @@
                 
                 <div class="teams-container mb-4">
                     <div class="team text-center">
-                        <a href="{{ url_for('team_detail', team_id=game.home_team.id) }}" class="text-decoration-none">
+                        <a href="{{ url_for('team_detail', team_id=game.home_team_id) }}" class="text-decoration-none">
                             <div class="team-logo mx-auto mb-2" style="background: var(--primary-blue); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">
-                                {{ game.home_team.city[0] }}
+                                {{ game.home_city[0] }}
                             </div>
-                            <div class="team-name text-dark" style="font-size: 1.1rem;">{{ game.home_team.city }} {{ game.home_team.name }}</div>
+                            <div class="team-name text-dark" style="font-size: 1.1rem;">{{ game.home_city }} {{ game.home_name }}</div>
                         </a>
                         <div class="team-score {% if game.home_score > game.away_score %}winner{% endif %}" style="font-size: 3rem; font-weight: 700; color: var(--primary-blue);">{{ game.home_score }}</div>
                     </div>
                     <div class="vs d-flex align-items-center justify-content-center" style="font-weight: 700; color: var(--text-muted);">VS</div>
                     <div class="team text-center">
-                        <a href="{{ url_for('team_detail', team_id=game.away_team.id) }}" class="text-decoration-none">
+                        <a href="{{ url_for('team_detail', team_id=game.away_team_id) }}" class="text-decoration-none">
                             <div class="team-logo mx-auto mb-2" style="background: var(--primary-red); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">
-                                {{ game.away_team.city[0] }}
+                                {{ game.away_city[0] }}
                             </div>
-                            <div class="team-name text-dark" style="font-size: 1.1rem;">{{ game.away_team.city }} {{ game.away_team.name }}</div>
+                            <div class="team-name text-dark" style="font-size: 1.1rem;">{{ game.away_city }} {{ game.away_name }}</div>
                         </a>
                         <div class="team-score {% if game.away_score > game.home_score %}winner{% endif %}" style="font-size: 3rem; font-weight: 700; color: var(--primary-blue);">{{ game.away_score }}</div>
                     </div>
@@ -42,9 +42,9 @@
                 <div class="text-center">
                     <strong>Winner:</strong>
                     {% if game.home_score > game.away_score %}
-                    <span class="badge badge-success">{{ game.home_team.name }}</span>
+                    <span class="badge badge-success">{{ game.home_name }}</span>
                     {% elif game.away_score > game.home_score %}
-                    <span class="badge badge-success">{{ game.away_team.name }}</span>
+                    <span class="badge badge-success">{{ game.away_name }}</span>
                     {% else %}
                     <span class="badge badge-secondary">Tie Game</span>
                     {% endif %}

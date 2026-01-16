@@ -4,19 +4,18 @@ from datetime import datetime
 
 DB_FILE = 'nba_stats.db'
 
-# Register an adapter for datetime objects
-def adapt_datetime(val):
-    """Format datetime for storage in SQLite."""
-    return val.isoformat()
+# Register converters for date/datetime types
+def convert_date(val):
+    """Convert stored date string back to datetime object."""
+    try:
+        return datetime.fromisoformat(val.decode('utf-8'))
+    except (ValueError, AttributeError):
+        return val.decode('utf-8') if isinstance(val, bytes) else val
 
-sqlite3.register_adapter(datetime, adapt_datetime)
-
-# Register a converter for datetime strings
-def convert_datetime(val):
-    """Convert stored datetime string back to datetime object."""
-    return datetime.fromisoformat(val.decode('utf-8'))
-
-sqlite3.register_converter("DATETIME", convert_datetime)
+# Register converters for both DATE and DATETIME type names
+sqlite3.register_adapter(datetime, lambda val: val.isoformat())
+sqlite3.register_converter("DATE", convert_date)
+sqlite3.register_converter("DATETIME", convert_date)
 
 def get_conn():
     """Get a database connection."""
@@ -27,12 +26,12 @@ def get_conn():
 def db_read(sql, params=None, single=False):
     """
     Execute a SELECT query and return results.
-    
+
     Args:
         sql: SQL query string
         params: Tuple of parameters for the query
         single: If True, returns a single dict or None. If False, returns a list of dicts.
-    
+
     Returns:
         Single dict or list of dicts
     """
@@ -40,13 +39,44 @@ def db_read(sql, params=None, single=False):
     try:
         cur = conn.cursor()
         cur.execute(sql, params or ())
-        
+
+        # Get column names from description
+        columns = [desc[0] for desc in cur.description] if cur.description else []
+
         if single:
             row = cur.fetchone()
-            return dict(row) if row else None
+            if row:
+                # Convert sqlite3.Row to dict and handle date columns
+                result = {}
+                for i, col in enumerate(columns):
+                    value = row[i]
+                    # Check if this looks like a date string and convert it
+                    if isinstance(value, str):
+                        try:
+                            # Try to parse as date
+                            result[col] = datetime.fromisoformat(value)
+                        except ValueError:
+                            result[col] = value
+                    else:
+                        result[col] = value
+                return result
+            return None
         else:
             rows = cur.fetchall()
-            return [dict(row) for row in rows]
+            results = []
+            for row in rows:
+                result = {}
+                for i, col in enumerate(columns):
+                    value = row[i]
+                    if isinstance(value, str):
+                        try:
+                            result[col] = datetime.fromisoformat(value)
+                        except ValueError:
+                            result[col] = value
+                    else:
+                        result[col] = value
+                results.append(result)
+            return results
     finally:
         conn.close()
 

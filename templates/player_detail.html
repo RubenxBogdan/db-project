@@ -107,9 +107,9 @@
                             <td>{{ stat.game.date|format_date('%m/%d/%Y') }}</td>
                             <td>
                                 {% if stat.game.home_team_id == player.current_team_id %}
-                                vs {{ stat.game.away_team.city }} {{ stat.game.away_team.name }}
+                                vs {{ stat.game.away_team_city }} {{ stat.game.away_team_name }}
                                 {% else %}
-                                @ {{ stat.game.home_team.city }} {{ stat.game.home_team.name }}
+                                @ {{ stat.game.home_team_city }} {{ stat.game.home_team_name }}
                                 {% endif %}
                             </td>
                             <td><strong>{{ stat.points }}</strong></td>
