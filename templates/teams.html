@@ -21,7 +21,7 @@
             <div class="team-name">{{ team.name }}</div>
             <div class="team-city">{{ team.city }}</div>
             <span class="team-conference {{ team.conference.lower() }}">{{ team.conference }}ern Conference</span>
-            <p class="mt-3 mb-0 text-muted">{{ team.players|length }} players on roster</p>
+            <p class="mt-3 mb-0 text-muted">{{ team.player_count }} players on roster</p>
         </a>
     </div>
     {% endfor %}

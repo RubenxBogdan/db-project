@@ -41,8 +41,14 @@ login_manager.login_view = 'login'
 # ============== Helper Functions ==============
 
 def get_teams():
-    """Get all teams."""
-    return db_read("SELECT * FROM teams ORDER BY name")
+    """Get all teams with player count."""
+    return db_read("""
+        SELECT t.*, COUNT(p.id) as player_count
+        FROM teams t
+        LEFT JOIN players p ON t.id = p.current_team_id
+        GROUP BY t.id
+        ORDER BY t.name
+    """)
 
 def get_team(team_id):
     """Get a single team by ID."""
