@@ -36,3 +36,7 @@ def add_player():
     db.session.add(new_p)
     db.session.commit()
     return redirect(url_for('index'))
+@app.route('/team/<team_name>')
+def team_roster(team_name):
+    players = Player.query.filter_by(team=team_name).all()
+    return render_template('index.html', players=players, title=f"Kader: {team_name}")
