@@ -2,7 +2,7 @@ create table Spieler (
   Spielername varchar(80),
   NBA_Spielerwins int,
   Position varchar(80),
-  Alter int,
+  Alter_Jahre int,
   Grösse int,
   Gewicht int,
   Spielerid int primary key
