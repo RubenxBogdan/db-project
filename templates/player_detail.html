@@ -14,9 +14,9 @@
     <h1>{{ player.name }}</h1>
     <div class="player-meta">
         <p>Position: <strong>{{ player.position }}</strong> | 
-        {% if player.current_team %}
-        <a href="{{ url_for('team_detail', team_id=player.current_team.id) }}" class="text-white">
-            {{ player.current_team.city }} {{ player.current_team.name }}
+        {% if player.current_team_id %}
+        <a href="{{ url_for('team_detail', team_id=player.current_team_id) }}" class="text-white">
+            {{ player.team_city }} {{ player.team_name }}
         </a>
         {% else %}
         Free Agent
