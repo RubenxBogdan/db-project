@@ -1,33 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ title if title else "Spieler Übersicht" }}</title>
+    <title>Meine ToDo-Liste</title>
 </head>
 <body>
-    <h1>{{ title if title else "Alle Spieler" }}</h1>
+    <h1>Meine ToDos</h1>
 
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-
-    <h2>Spieler hinzufügen:</h2>
-    <form method="POST" action="{{ url_for('add_player') }}">
-        Name: <input type="text" name="name"><br>
-        Team: <input type="text" name="team"><br>
-        History: <input type="text" name="history"><br>
-        <input type="submit" value="Hinzufügen">
+    <form method="POST">
+        <input type="text" name="text" placeholder="Neues Todo" required>
+        <button type="submit">Hinzufügen</button>
     </form>
 
-    <h2>Spieler Liste:</h2>
     <ul>
-        {% for player in players %}
-            <li>{{ player.name }} ({{ player.team }}) - {{ player.points }} Punkte</li>
+        {% for id, text in items %}
+            <li>
+                {{ text }} 
+                <a href="/delete/{{ id }}">Löschen</a>
+            </li>
         {% endfor %}
     </ul>
 </body>
