@@ -107,7 +107,7 @@ def get_game_stats(game_id):
 def get_team_history(player_id):
     """Get team history for a player."""
     return db_read("""
-        SELECT th.*, t.city, t.name
+        SELECT th.*, t.city as team_city, t.name as team_name
         FROM team_history th
         JOIN teams t ON th.team_id = t.id
         WHERE th.player_id = ?

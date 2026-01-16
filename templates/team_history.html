@@ -27,8 +27,8 @@
                         {% for history in team_history %}
                         <tr>
                             <td>
-                                <a href="{{ url_for('team_detail', team_id=history.team.id) }}">
-                                    {{ history.team.city }} {{ history.team.name }}
+                                <a href="{{ url_for('team_detail', team_id=history.team_id) }}">
+                                    {{ history.team_city }} {{ history.team_name }}
                                 </a>
                             </td>
                             <td>{{ history.start_date|format_date }}</td>

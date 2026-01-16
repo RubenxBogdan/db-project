@@ -36,18 +36,18 @@
                     </td>
                     <td><span class="player-position">{{ player.position }}</span></td>
                     <td>
-                        {% if player.current_team %}
-                        <a href="{{ url_for('team_detail', team_id=player.current_team.id) }}">
-                            {{ player.current_team.city }} {{ player.current_team.name }}
+                        {% if player.current_team_id %}
+                        <a href="{{ url_for('team_detail', team_id=player.current_team_id) }}">
+                            {{ player.city }} {{ player.team_name }}
                         </a>
                         {% else %}
                         <span class="text-muted">Free Agent</span>
                         {% endif %}
                     </td>
                     <td>
-                        <span class="badge badge-primary">{{ player.avg_points }} PPG</span>
-                        <span class="badge badge-secondary">{{ player.avg_rebounds }} RPG</span>
-                        <span class="badge badge-success">{{ player.avg_assists }} APG</span>
+                        <span class="badge badge-primary">- PPG</span>
+                        <span class="badge badge-secondary">- RPG</span>
+                        <span class="badge badge-success">- APG</span>
                     </td>
                     <td>
                         <a href="{{ url_for('player_detail', player_id=player.id) }}" class="btn btn-sm btn-primary">View Profile</a>

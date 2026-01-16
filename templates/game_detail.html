@@ -80,13 +80,13 @@
                 {% for stat in statistics %}
                 <tr>
                     <td>
-                        <a href="{{ url_for('player_detail', player_id=stat.player.id) }}">
-                            {{ stat.player.name }}
+                        <a href="{{ url_for('player_detail', player_id=stat.player_id) }}">
+                            {{ stat.player_name }}
                         </a>
                     </td>
                     <td>
-                        {% if stat.player.current_team %}
-                        {{ stat.player.current_team.city }} {{ stat.player.current_team.name }}
+                        {% if stat.city and stat.team_name %}
+                        {{ stat.city }} {{ stat.team_name }}
                         {% else %}
                         <span class="text-muted">Unknown</span>
                         {% endif %}
